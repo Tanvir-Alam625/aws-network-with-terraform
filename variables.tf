@@ -1,9 +1,9 @@
 variable "project_name" {
-  default = "terraform-lab"
+  default = "tv"
 }
 
 variable "environment" {
-  default = "dev"
+  default = "prod"
 }
 
 variable "vpc_cidr" {
@@ -19,15 +19,40 @@ variable "private_subnet_cidr" {
 }
 
 variable "instance_type" {
-  default = "t3.micro"
+  default = "t3.medium"
 }
 
 variable "key_name" {
   description = "Existing AWS Key Pair"
 }
 variable "aws_profile" {
-  default = "ofc_tv_aws"
+  default = "tv-ostad-aws"
 }
 variable "aws_region" {
   default = "ap-south-1"
 }
+
+variable "create_ssm_role" {
+  description = "Set to true only if your AWS account can create IAM roles for SSM access"
+  type        = bool
+  default     = false
+}
+
+variable "public_volume_size" {
+  default = 8
+}
+variable "public_volume_type" {
+  default = "gp3"
+}
+variable "public_encrypted" {
+  default = true
+}
+variable "private_volume_size" {
+  default = 8
+}
+variable "private_volume_type" {
+  default = "gp3"
+}
+variable "private_encrypted" {    
+  default = true
+} 
