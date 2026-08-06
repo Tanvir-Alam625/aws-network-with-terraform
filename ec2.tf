@@ -31,6 +31,16 @@ resource "aws_instance" "public" {
     volume_type = var.public_volume_type
     encrypted   = var.public_encrypted
   }
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo su ubuntu
+              sudo apt update -y
+              sudo apt install -y nginx
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+              sudo hostnamectl set-hostname ${local.name}-public-ec2 
+              echo "<h1>Welcome to ${var.project_name} ${var.environment} environment</h1>" | sudo tee /var/www/html/index.html
+            EOF
 
   iam_instance_profile = var.create_ssm_role ? aws_iam_instance_profile.ec2_instance_profile[0].name : null
 
@@ -56,6 +66,17 @@ resource "aws_instance" "private" {
     volume_type = var.private_volume_type
     encrypted   = var.private_encrypted
   }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo su ubuntu
+              sudo apt update -y
+              sudo apt install -y nginx
+              sudo systemctl start nginx
+              sudo systemctl enable nginx
+              sudo hostnamectl set-hostname ${local.name}-private-ec2 
+              echo "<h1>Welcome to ${var.project_name} ${var.environment} environment</h1>" | sudo tee /var/www/html/index.html
+            EOF
 
   iam_instance_profile = var.create_ssm_role ? aws_iam_instance_profile.ec2_instance_profile[0].name : null
 
