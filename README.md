@@ -18,9 +18,13 @@ flowchart LR
       PrivateSubnetAZ1[Private Subnet AZ1]
       PublicEC2[Public Frontend EC2 / Bastion]
       BackendEC2[Private Backend EC2]
+      NAT[NAT Gateway]
+      NatEip[Elastic IP]
       PrivateRTAZ1[Private Route Table AZ1]
 
       PublicSubnetAZ1 --> PublicEC2
+      PublicSubnetAZ1 --> NAT
+      NatEip --> NAT
       PrivateRTAZ1 --> PrivateSubnetAZ1
       PrivateSubnetAZ1 --> BackendEC2
     end
@@ -39,6 +43,8 @@ flowchart LR
 
   PublicRT --> PublicSubnetAZ1
   PublicRT --> PublicSubnetAZ2
+  PrivateRTAZ1 --> NAT
+  PrivateRTAZ2 --> NAT
 
   PublicEC2 -. SSH 22 .-> BackendEC2
   PublicEC2 -. Backend API 3000 .-> BackendEC2
@@ -51,7 +57,8 @@ flowchart LR
 - One VPC with DNS support enabled
 - Two public subnets and two private subnets across two Availability Zones
 - An internet gateway for public access
-- A shared public route table and per-AZ private route tables (no internet route from private subnets)
+- One NAT gateway in the first public subnet for private subnet egress
+- A shared public route table and per-AZ private route tables with default routes to the NAT gateway
 - Security groups for public app, private app, and private database instances
 - Three Ubuntu EC2 instances:
   - One public frontend EC2 instance (also used as bastion host)
@@ -86,7 +93,7 @@ flowchart LR
 
 ## Networking Behavior
 
-- Private subnets do not have direct internet egress (no NAT/EIP required).
+- Private subnets route outbound internet traffic through a NAT gateway backed by an Elastic IP.
 - Private instances do not receive public IPs.
 - Public EC2 can be used as a bastion to SSH into private app and DB instances.
 

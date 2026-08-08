@@ -41,6 +41,11 @@ variable "aws_region" {
   default = "ap-south-1"
 }
 
+variable "nat_eip_allocation_id" {
+  description = "Existing Elastic IP allocation ID used by NAT gateway"
+  type        = string
+}
+
 variable "create_ssm_role" {
   description = "Set to true only if your AWS account can create IAM roles for SSM access"
   type        = bool
