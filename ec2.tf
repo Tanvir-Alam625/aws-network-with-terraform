@@ -84,3 +84,38 @@ resource "aws_instance" "private" {
     Name = "${local.name}-private-ec2"
   }
 }
+
+resource "aws_instance" "database" {
+  ami                         = data.aws_ami.ubuntu_24.id
+  instance_type               = var.db_instance_type
+  subnet_id                   = aws_subnet.private_2.id
+  associate_public_ip_address = false
+
+  vpc_security_group_ids = [
+    aws_security_group.database.id
+  ]
+
+  key_name = var.key_name
+
+  root_block_device {
+    volume_size = var.db_volume_size
+    volume_type = var.db_volume_type
+    encrypted   = var.db_encrypted
+  }
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt update -y
+              sudo apt install -y postgresql
+              sudo systemctl start postgresql
+              sudo systemctl enable postgresql
+              sudo hostnamectl set-hostname ${local.name}-db-ec2
+            EOF
+
+  iam_instance_profile = var.create_ssm_role ? aws_iam_instance_profile.ec2_instance_profile[0].name : null
+
+  tags = {
+    Name = "${local.name}-db-ec2"
+    Role = "Database"
+  }
+}

@@ -46,8 +46,19 @@ resource "aws_security_group" "private_ec2" {
     to_port   = 22
     protocol  = "tcp"
 
-    security_groups = [
-      aws_security_group.public_ec2.id
+    cidr_blocks = [
+      "${aws_instance.public.private_ip}/32"
+    ]
+  }
+
+  ingress {
+
+    from_port = 3000
+    to_port   = 3000
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "${aws_instance.public.private_ip}/32"
     ]
   }
 
@@ -62,5 +73,35 @@ resource "aws_security_group" "private_ec2" {
 
   tags = {
     Name = "${local.name}-private-sg"
+  }
+}
+
+resource "aws_security_group" "database" {
+  name   = "${local.name}-database-sg"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_instance.private.private_ip}/32"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_instance.public.private_ip}/32"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${local.name}-database-sg"
   }
 }

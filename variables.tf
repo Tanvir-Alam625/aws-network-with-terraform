@@ -14,8 +14,16 @@ variable "public_subnet_cidr" {
   default = "10.0.1.0/24"
 }
 
+variable "public_subnet_2_cidr" {
+  default = "10.0.3.0/24"
+}
+
 variable "private_subnet_cidr" {
   default = "10.0.2.0/24"
+}
+
+variable "private_subnet_2_cidr" {
+  default = "10.0.4.0/24"
 }
 
 variable "instance_type" {
@@ -55,4 +63,20 @@ variable "private_volume_type" {
 }
 variable "private_encrypted" {    
   default = true
-} 
+}
+
+variable "db_instance_type" {
+  default = "t3.medium"
+}
+
+variable "db_volume_size" {
+  default = 16
+}
+
+variable "db_volume_type" {
+  default = "gp3"
+}
+
+variable "db_encrypted" {
+  default = true
+}
