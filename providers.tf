@@ -3,7 +3,7 @@ provider "aws" {
   region  = "${var.aws_region}"
   default_tags {
     tags = {
-        Project     = "terraform-lab"
+        Project     = "tv-lab"
         Environment = "dev"
         ManagedBy   = "Terraform"
         Owner       = "Tanvir"
