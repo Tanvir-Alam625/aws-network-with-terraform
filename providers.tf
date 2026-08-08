@@ -4,7 +4,7 @@ provider "aws" {
   default_tags {
     tags = {
         Project     = "tv-lab"
-        Environment = "dev"
+        Environment = "prod"
         ManagedBy   = "Terraform"
         Owner       = "Tanvir"
     }
