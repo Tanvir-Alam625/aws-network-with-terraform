@@ -31,10 +31,11 @@ variable "instance_type" {
 }
 
 variable "key_name" {
+  default = "tv_ofc_key"
   description = "Existing AWS Key Pair"
 }
 variable "aws_profile" {
-  default = "tv-ostad-aws"
+  default = "ofc_tv_aws"
 }
 variable "aws_region" {
   default = "ap-south-1"
