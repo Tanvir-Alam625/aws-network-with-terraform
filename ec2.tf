@@ -35,6 +35,14 @@ resource "aws_instance" "public" {
               #!/bin/bash
               sudo su ubuntu
               sudo apt update -y
+              # install nodejs and npm
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              nvm install --lts
+              node -v
+              npm -v
+              # where install nginx
               sudo apt install -y nginx
               sudo systemctl start nginx
               sudo systemctl enable nginx
@@ -71,11 +79,17 @@ resource "aws_instance" "private" {
               #!/bin/bash
               sudo su ubuntu
               sudo apt update -y
-              sudo apt install -y nginx
-              sudo systemctl start nginx
-              sudo systemctl enable nginx
+              # where install nvm and nodejs
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              nvm install --lts
+              node -v
+              npm -v
+              # where install pm2
+              npm install pm2@latest -g
+              pm2 -v
               sudo hostnamectl set-hostname ${local.name}-private-ec2 
-              echo "<h1>Welcome to ${var.project_name} ${var.environment} environment</h1>" | sudo tee /var/www/html/index.html
             EOF
 
   iam_instance_profile = var.create_ssm_role ? aws_iam_instance_profile.ec2_instance_profile[0].name : null
@@ -109,6 +123,10 @@ resource "aws_instance" "database" {
               sudo apt install -y postgresql
               sudo systemctl start postgresql
               sudo systemctl enable postgresql
+              # where create database and user
+              sudo -u postgres psql -c "CREATE DATABASE ${local.name}_db;"
+              sudo -u postgres psql -c "CREATE USER ${local.name}_user WITH ENCRYPTED PASSWORD '${local.name}_password';"
+              sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${local.name}_db TO ${local.name}_user;"
               sudo hostnamectl set-hostname ${local.name}-db-ec2
             EOF
 
